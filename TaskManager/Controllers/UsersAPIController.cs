@@ -16,7 +16,7 @@ using TaskManager.Models;
 
 namespace TaskManager.Controllers
 {
-    [Route("api/Users")]
+    [Route("api/Users/{action=Index}/{id?}")]
     [ApiController]
     public class UsersAPIController : ControllerBase
     {
@@ -70,14 +70,35 @@ namespace TaskManager.Controllers
         }
 
 
+        
+
         [AllowAnonymous]
         [HttpPost]
-        public LogonResult Logon(
+        public Task<ActionResult<LogonResult>> Logon(
             [FromBody]Signin Signin,
             [FromServices]SigningConfigurations signingConfigurations,
             [FromServices]TokenConfigurations tokenConfigurations)
         {
-            return PerformLogon(Signin, signingConfigurations, tokenConfigurations, _context);
+
+            var result = PerformLogon(Signin, signingConfigurations, tokenConfigurations, _context);
+
+            if (result.Authenticated)
+            {
+                return System.Threading.Tasks.Task.Run<ActionResult<LogonResult>>(() =>
+                {
+                    return Ok(result);
+                });
+            }
+            else
+            {
+                return System.Threading.Tasks.Task.Run<ActionResult<LogonResult>>(() =>
+                {
+                    return StatusCode(401, result);
+                });
+            }
+            
+
+
 
         }
 
@@ -109,6 +130,8 @@ namespace TaskManager.Controllers
                     }
                 );
 
+               
+
                 DateTime jwtDateOfCreation = DateTime.Now;
                 DateTime jwtDateOfExpiration = jwtDateOfCreation +
                     TimeSpan.FromSeconds(tokenConfigurations.Seconds);
@@ -123,6 +146,7 @@ namespace TaskManager.Controllers
                     NotBefore = jwtDateOfCreation,
                     Expires = jwtDateOfExpiration
                 });
+               
                 var token = jwtSecHandler.WriteToken(securityToken);
 
                 return new LogonResult(

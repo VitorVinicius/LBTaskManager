@@ -65,12 +65,18 @@ namespace TaskManager
             {
                 authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+
+                
             }).AddJwtBearer(bearerOptions =>
             {
                 var validationParams = bearerOptions.TokenValidationParameters;
                 validationParams.IssuerSigningKey = signingConfigurations.Key;
                 validationParams.ValidAudience = tokenConfigurations.Audience;
                 validationParams.ValidIssuer = tokenConfigurations.Issuer;
+
+                
+
 
                 //Validates the received token signature
                 validationParams.ValidateIssuerSigningKey = true;
@@ -115,6 +121,7 @@ namespace TaskManager
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

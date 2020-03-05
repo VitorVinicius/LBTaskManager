@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace TaskManager.Models
 {
@@ -9,7 +10,7 @@ namespace TaskManager.Models
         public string Description { get; set; }
         public bool Concluded { get; set; }
         public long UserId { get; set; }
-
+        [JsonIgnore]
         public virtual User User { get; set; }
     }
 }
