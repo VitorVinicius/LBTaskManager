@@ -101,7 +101,7 @@ namespace TaskManager.Controllers
 
 
         }
-
+        [NonAction]
         public static LogonResult PerformLogon(Signin Signin, SigningConfigurations signingConfigurations, TokenConfigurations tokenConfigurations,TaskManagerContext context)
         {
             bool isLoginValid = false;
@@ -122,45 +122,51 @@ namespace TaskManager.Controllers
             }
             else
             {
-                ClaimsIdentity identity = new ClaimsIdentity(
-                    new GenericIdentity(user.Id.ToString(), "Login"),
-                    new[] {
+                return PerformLogon(signingConfigurations, tokenConfigurations, user);
+            }
+        }
+        [NonAction]
+        public static LogonResult PerformLogon(SigningConfigurations signingConfigurations, TokenConfigurations tokenConfigurations, User user)
+        {
+            ClaimsIdentity identity = new ClaimsIdentity(
+                                new GenericIdentity(user.Id.ToString(), "Login"),
+                                new[] {
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
                         new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString())
-                    }
-                );
-
-               
-
-                DateTime jwtDateOfCreation = DateTime.Now;
-                DateTime jwtDateOfExpiration = jwtDateOfCreation +
-                    TimeSpan.FromSeconds(tokenConfigurations.Seconds);
-
-                var jwtSecHandler = new JwtSecurityTokenHandler();
-                var securityToken = jwtSecHandler.CreateToken(new SecurityTokenDescriptor
-                {
-                    Issuer = tokenConfigurations.Issuer,
-                    Audience = tokenConfigurations.Audience,
-                    SigningCredentials = signingConfigurations.SigningCredentials,
-                    Subject = identity,
-                    NotBefore = jwtDateOfCreation,
-                    Expires = jwtDateOfExpiration
-                });
-               
-                var token = jwtSecHandler.WriteToken(securityToken);
-
-                return new LogonResult(
-                        true,
-                        jwtDateOfCreation.ToString("yyyy-MM-dd HH:mm:ss"),
-                        jwtDateOfExpiration.ToString("yyyy-MM-dd HH:mm:ss"),
-                        token,
-                        "OK"
+                                }
+                            );
 
 
-                ) {
-                    Principal = new ClaimsPrincipal(identity)
-                };
-            }
+
+            DateTime jwtDateOfCreation = DateTime.Now;
+            DateTime jwtDateOfExpiration = jwtDateOfCreation +
+                TimeSpan.FromSeconds(tokenConfigurations.Seconds);
+
+            var jwtSecHandler = new JwtSecurityTokenHandler();
+            var securityToken = jwtSecHandler.CreateToken(new SecurityTokenDescriptor
+            {
+                Issuer = tokenConfigurations.Issuer,
+                Audience = tokenConfigurations.Audience,
+                SigningCredentials = signingConfigurations.SigningCredentials,
+                Subject = identity,
+                NotBefore = jwtDateOfCreation,
+                Expires = jwtDateOfExpiration
+            });
+
+            var token = jwtSecHandler.WriteToken(securityToken);
+
+            return new LogonResult(
+                    true,
+                    jwtDateOfCreation.ToString("yyyy-MM-dd HH:mm:ss"),
+                    jwtDateOfExpiration.ToString("yyyy-MM-dd HH:mm:ss"),
+                    token,
+                    "OK"
+
+
+            )
+            {
+                Principal = new ClaimsPrincipal(identity)
+            };
         }
 
         private bool UserExists(long id)

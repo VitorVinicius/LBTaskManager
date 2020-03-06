@@ -126,7 +126,7 @@ namespace TaskManager.Controllers
 
 
         // POST: api/Tasks/SetConcluded/5
-        [HttpPost("{id}")]
+        [HttpPost("~/api/[controller]/{id}/SetConcluded")]
         public async Task<ActionResult<TM_Task>> SetConcluded(long id)
         {
             User UserData = GetCurrentUserData();

@@ -1,37 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TaskManager.Models;
 
 namespace TaskManager.Controllers
 {
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private User _currentUserData = null;
+        private readonly TaskManagerContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(Models.ITaskManagerContext context)
         {
-            _logger = logger;
+            
+            _context = (TaskManagerContext)context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index([FromServices]SigningConfigurations signingConfigurations,
+            [FromServices]TokenConfigurations tokenConfigurations)
         {
+            User UserData = GetCurrentUserData();
+            ViewData.Add("UserData", UserData);
+            this.Response.Cookies.Append(
+                    "AccessToken",
+                     UsersAPIController.PerformLogon(signingConfigurations,tokenConfigurations, UserData).AccessToken,
+                    new Microsoft.AspNetCore.Http.CookieOptions()
+                    {
+                        Path = "/"
+                    }
+                );
             return View();
         }
 
-        public IActionResult Privacy()
+        private User GetCurrentUserData()
         {
-            return View();
+
+            try
+            {
+                _currentUserData = _currentUserData ?? _context.User.Find(long.Parse(User.Identity.Name));
+            }
+            catch
+            {
+                //Do nothing here yet
+            }
+
+            return _currentUserData;
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }

@@ -16,7 +16,7 @@ using TaskManager.Models;
 namespace TaskManager.Controllers
 {
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class UsersController : BaseController
+    public class UsersController : Controller
     {
         private readonly TaskManagerContext _context;
 
@@ -36,7 +36,7 @@ namespace TaskManager.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Signin()
         {
-            return View(new Signin());
+            return await System.Threading.Tasks.Task.Run(()=> { return View(new Signin()); });
 
         }
 
@@ -58,22 +58,29 @@ namespace TaskManager.Controllers
 
             if (logonResult.Authenticated)
             {
-                SetPrincipal(logonResult.Principal);
+                //SetPrincipal(logonResult.Principal);
 
+                var authProperties = new AuthenticationProperties
+                {
+                    AllowRefresh = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(1)
+                };
 
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(logonResult.Principal),
+                    authProperties);
 
-                                    var authProperties = new AuthenticationProperties
-                                    {
-                                        AllowRefresh = true,
-                                        ExpiresUtc = DateTimeOffset.UtcNow.AddDays(1)
-                                    };
+                this.Response.Cookies.Append(
+                    "AccessToken",
+                    logonResult.AccessToken,
+                    new Microsoft.AspNetCore.Http.CookieOptions()
+                    {
+                        Path = "/"
+                    }
+                );
 
-                                    await HttpContext.SignInAsync(
-                                        CookieAuthenticationDefaults.AuthenticationScheme,
-                                        new ClaimsPrincipal(logonResult.Principal),
-                                        authProperties);
-
-                return RedirectToAction("Index", "Tasks");
+                return RedirectToAction("Index", "Home");
 
             }
             else

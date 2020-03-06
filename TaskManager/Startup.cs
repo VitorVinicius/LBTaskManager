@@ -100,6 +100,9 @@ namespace TaskManager
 
 
             #endregion
+#if DEBUG
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+#endif
 
         }
 
