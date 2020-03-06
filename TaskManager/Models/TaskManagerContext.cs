@@ -83,9 +83,7 @@ namespace TaskManager.Models
                     .HasMaxLength(128)
                     .HasComment("Sobrenome do usuário");
 
-                entity.Property(e => e.LockedOut)
-                    .HasColumnName("Locked_Out")
-                    .HasComment("Flag de bloqueio de conta");
+                
 
                 entity.Property(e => e.PasswordSalt)
                     .IsRequired()

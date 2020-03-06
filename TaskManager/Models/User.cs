@@ -20,7 +20,7 @@ namespace TaskManager.Models
         public string Password { get; set; }
         public string PassworhHash { get; set; }
         public string PasswordSalt { get; set; }
-        public bool LockedOut { get; set; }
+
         public DateTime RegistrationDate { get; set; }
         public DateTime? LastUpdateDate { get; set; }
 
