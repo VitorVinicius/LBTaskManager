@@ -92,21 +92,29 @@ namespace TaskManager.Controllers
         }
 
 
-        // GET: Users/Details/5
-        public async Task<IActionResult> Details(long? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Id == id);
+
+        // GET: Users/Signout/
+        public async Task<IActionResult> Signout()
+        {
+            await HttpContext.SignOutAsync();
+            foreach (var cookie in Request.Cookies.Keys)
+            {
+                Response.Cookies.Delete(cookie);
+            }
+            return await System.Threading.Tasks.Task.Run(() => { return RedirectToAction("Signin", "Users"); });
+        }
+
+
+        // GET: Users/Details/5
+        public async Task<IActionResult> Details()
+        {
+            var id = long.Parse(User.Identity.Name);
+            var user = await _context.User.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
-
             return View(user);
         }
 
@@ -131,8 +139,14 @@ namespace TaskManager.Controllers
             {
                 ModelState.AddModelError("Password", "Password is required");
             }
+            
+            
 
             ValidateUserData(user);
+            if (_context.User.Any(u => u.Email == user.Email))
+            {
+                ModelState.AddModelError("Email", "This email is already associated with another account.");
+            }
 
             if (ModelState.IsValid)
             {
@@ -171,6 +185,13 @@ namespace TaskManager.Controllers
             {
                 ModelState.AddModelError("Email", "Email is required");
             }
+            if (user.Email?.Contains("@")==false)
+            {
+                ModelState.AddModelError("Email", "Invalid email, must have an '@'.");
+            }
+
+
+            
 
             ModelState.Remove("PasswordSalt");
             ModelState.Remove("PassworhHash");
@@ -186,7 +207,7 @@ namespace TaskManager.Controllers
             var user = await _context.User.FindAsync(id);
             if (user == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(SignOut));
             }
             return View(user);
         }
@@ -196,11 +217,20 @@ namespace TaskManager.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Account(long id, [Bind("Firstname,Lastname,Email")] User user)
+        public async Task<IActionResult> Account([Bind("Firstname,Lastname,Email")] User user)
         {
-            if (id != user.Id)
+            var id = long.Parse(User.Identity.Name);
+            var _user = await _context.User.FindAsync(id);
+            if (_user == null)
             {
                 return NotFound();
+            }
+            user.Id = _user.Id;
+
+            ValidateUserData(user);
+            if (_context.User.Any(u => u.Email == user.Email && u.Id!= id))
+            {
+                ModelState.AddModelError("Email", "This email is already associated with another account.");
             }
 
             if (ModelState.IsValid)
@@ -227,15 +257,12 @@ namespace TaskManager.Controllers
         }
 
         // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(long? id)
+        public async Task<IActionResult> Delete()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var id = long.Parse(User.Identity.Name);
+            var user = await _context.User.FindAsync(id);
+         
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
                 return NotFound();
@@ -247,12 +274,19 @@ namespace TaskManager.Controllers
         // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        public async Task<IActionResult> DeleteConfirmed()
         {
+            var id = long.Parse(User.Identity.Name);
             var user = await _context.User.FindAsync(id);
+
+
+            if (user == null)
+            {
+                return NotFound();
+            }
             _context.User.Remove(user);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(SignOut));
         }
 
         private bool UserExists(long id)
