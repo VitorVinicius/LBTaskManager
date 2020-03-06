@@ -61,6 +61,7 @@ html {
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
+
 }
 .footer {
   position: absolute;
@@ -68,4 +69,25 @@ body {
   width: 100%;
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
+}
+
+i{
+    font-size:large;
+}
+
+.jumbotron-top-mini {
+    padding: 0.01rem 1rem;
+}
+span.btn.btn-xs.btn-default {
+    width: 25px;
+    padding: 0;
+}
+a.active:hover span.pull-right {
+    visibility:visible;
+}
+a span.pull-right {
+    visibility:hidden;
+}
+span i {
+    color: white;
 }
