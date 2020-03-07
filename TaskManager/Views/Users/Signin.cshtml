@@ -6,13 +6,14 @@
 
 <h1>Signin</h1>
 
-<h4>Signin</h4>
+<h4>Provide your email and password below</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Signin">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
+                <input value="@(ViewData["ReturnUrl"])" name="ReturnUrl" type="hidden"/>
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>

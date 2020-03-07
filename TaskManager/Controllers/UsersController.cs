@@ -34,8 +34,9 @@ namespace TaskManager.Controllers
 
         // GET: Users/Signin/
         [AllowAnonymous]
-        public async Task<IActionResult> Signin()
+        public async Task<IActionResult> Signin(string ReturnUrl)
         {
+            ViewData.Add("ReturnUrl", ReturnUrl);
             return await System.Threading.Tasks.Task.Run(()=> { return View(new Signin()); });
 
         }
@@ -49,16 +50,16 @@ namespace TaskManager.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> Signin([Bind("Email,Password")] Signin signin,
+        public async Task<IActionResult> Signin(string ReturnUrl,[Bind("Email,Password")] Signin signin,
             [FromServices]SigningConfigurations signingConfigurations,
             [FromServices]TokenConfigurations tokenConfigurations)
         {
-
+            ViewData["ReturnUrl"] = ReturnUrl;
             LogonResult logonResult = UsersAPIController.PerformLogon(signin, signingConfigurations, tokenConfigurations, _context);
 
             if (logonResult.Authenticated)
             {
-                //SetPrincipal(logonResult.Principal);
+                
 
                 var authProperties = new AuthenticationProperties
                 {
@@ -80,7 +81,15 @@ namespace TaskManager.Controllers
                     }
                 );
 
-                return RedirectToAction("Index", "Home");
+                if (ViewData["ReturnUrl"] != null)
+                {
+                    return Redirect(ViewData["ReturnUrl"].ToString());
+                }
+                else {
+
+                    return RedirectToAction("Index", "Home");
+                }
+                
 
             }
             else

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -43,7 +44,12 @@ namespace TaskManager.Controllers
                 );
             return View();
         }
-
+        [AllowAnonymous]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel
+            { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
         private User GetCurrentUserData()
         {
 
