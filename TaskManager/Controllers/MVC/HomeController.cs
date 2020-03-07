@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TaskManager.Models;
 
-namespace TaskManager.Controllers
+namespace TaskManager.Controllers.MVC
 {
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class HomeController : Controller
@@ -23,9 +23,9 @@ namespace TaskManager.Controllers
         private User _currentUserData = null;
         private readonly TaskManagerContext _context;
 
-        public HomeController(Models.ITaskManagerContext context)
+        public HomeController(ITaskManagerContext context)
         {
-            
+
             _context = (TaskManagerContext)context;
         }
 
@@ -34,9 +34,9 @@ namespace TaskManager.Controllers
         {
             User UserData = GetCurrentUserData();
             ViewData.Add("UserData", UserData);
-            this.Response.Cookies.Append(
+            Response.Cookies.Append(
                     "AccessToken",
-                     UsersAPIController.PerformLogon(signingConfigurations,tokenConfigurations, UserData).AccessToken,
+                     API.UsersController.PerformLogon(signingConfigurations, tokenConfigurations, UserData).AccessToken,
                     new Microsoft.AspNetCore.Http.CookieOptions()
                     {
                         Path = "/"

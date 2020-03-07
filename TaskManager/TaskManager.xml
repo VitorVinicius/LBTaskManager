@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TaskManager</name>
+    </assembly>
+    <members>
+        <member name="T:TaskManager.Controllers.API.TasksController">
+            <summary>Task Management Routes</summary>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.#ctor(TaskManager.Models.ITaskManagerContext)">
+            <summary>Initializes the controller</summary>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.GetTask">
+            <summary>Get user task list</summary>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.GetTask(System.Int64)">
+            <summary>Get user task by id</summary>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.PutTask(System.Int64,TaskManager.Models.Task)">
+            <summary>Update user task by id and Task Data</summary>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.PostTask(TaskManager.Models.Task)">
+            <summary>Add user task</summary>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.SetConcluded(System.Int64)">
+            <summary>Set user task as concluded</summary>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.DeleteTask(System.Int64)">
+            <summary>Delete user task</summary>
+        </member>
+        <member name="T:TaskManager.Controllers.API.UsersController">
+            <summary>
+            User Management routes
+            </summary>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.Logon(TaskManager.Models.Signin,TaskManager.Models.SigningConfigurations,TaskManager.Models.TokenConfigurations)">
+            <summary>
+            Perform logon and returns JWT Token Info.
+            </summary>
+            <param name="Signin">Signin Data</param>
+            <param name="signingConfigurations"></param>
+            <param name="tokenConfigurations"></param> 
+        </member>
+        <member name="P:TaskManager.Models.LogonResult.Authenticated">
+            <summary>Successfully authenticated flag</summary>
+        </member>
+        <member name="P:TaskManager.Models.LogonResult.Created">
+            <summary>JWT token creation date</summary>
+        </member>
+        <member name="P:TaskManager.Models.LogonResult.Expiration">
+            <summary>JWT token Expiration date</summary>
+        </member>
+        <member name="P:TaskManager.Models.LogonResult.AccessToken">
+            <summary>JWT AccessToken</summary>
+        </member>
+        <member name="P:TaskManager.Models.LogonResult.Message">
+            <summary>Logon Result Message</summary>
+        </member>
+        <member name="P:TaskManager.Models.Signin.Email">
+            <summary>User Email</summary>
+        </member>
+        <member name="P:TaskManager.Models.Signin.Password">
+            <summary>User Password</summary>
+        </member>
+        <member name="P:TaskManager.Models.Task.Id">
+            <summary>Record List</summary>
+        </member>
+        <member name="P:TaskManager.Models.Task.Description">
+            <summary>Task Description</summary>
+        </member>
+        <member name="P:TaskManager.Models.Task.Concluded">
+            <summary>Task Status Flag</summary>
+        </member>
+        <member name="P:TaskManager.Models.Task.UserId">
+            <summary>Owner user ID</summary>
+        </member>
+        <member name="P:TaskManager.Models.Task.User">
+            <summary>Owner user</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Id">
+            <summary>Record Id</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Firstname">
+            <summary>User's fistname</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Lastname">
+            <summary>User's lastname</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Email">
+            <summary>User's Email</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.RegistrationDate">
+            <summary>User's Registration Date</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.LastUpdateDate">
+            <summary>User's Last Update Date</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Task">
+            <summary>User's Task List</summary>
+        </member>
+    </members>
+</doc>

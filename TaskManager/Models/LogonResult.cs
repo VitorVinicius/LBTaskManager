@@ -6,10 +6,15 @@ namespace TaskManager.Models
 {
     public class LogonResult
     {
+        ///<summary>Successfully authenticated flag</summary>
         public bool Authenticated { get; set; }
+        ///<summary>JWT token creation date</summary>
         public string Created { get; set; }
+        ///<summary>JWT token Expiration date</summary>
         public string Expiration { get; set; }
+        ///<summary>JWT AccessToken</summary>
         public string AccessToken { get; set; }
+        ///<summary>Logon Result Message</summary>
         public string Message { get; set; }
         [JsonIgnore]
         internal ClaimsPrincipal Principal { get; set; }

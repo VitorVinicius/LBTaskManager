@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using TaskManager.Models;
+
 
 namespace TaskManager
 {
@@ -27,6 +26,7 @@ namespace TaskManager
 
         public IConfiguration Configuration { get; }
 
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -34,7 +34,7 @@ namespace TaskManager
             services.AddScoped<Models.ITaskManagerContext, Models.TaskManagerContext>();
 
             services.AddControllersWithViews();
-           
+
 
 
             var signingConfigurations = new SigningConfigurations();
@@ -68,7 +68,7 @@ namespace TaskManager
                 authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
 
-                
+
             }).AddJwtBearer(bearerOptions =>
             {
                 var validationParams = bearerOptions.TokenValidationParameters;
@@ -76,7 +76,7 @@ namespace TaskManager
                 validationParams.ValidAudience = tokenConfigurations.Audience;
                 validationParams.ValidIssuer = tokenConfigurations.Issuer;
 
-                
+
 
 
                 //Validates the received token signature
@@ -101,9 +101,80 @@ namespace TaskManager
 
 
             #endregion
+
+            #region Enable Views Edition while running
 #if DEBUG
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 #endif
+
+            #endregion
+
+
+            #region Configure Swagger
+            // Configure Swagger API Documentation Mechanism
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Task Manager App API Definition",
+                    Version = "v1",
+                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                    {
+                        Email = "vitor.v.gomes@live.com",
+                        Name = "Vitor Vinicius",
+                        Url = new Uri("https://www.linkedin.com/in/vitorvgsilva/")
+                    },
+                    Description = "Use this documentation to integrate your system with the Task Manager application.",
+                    License = new Microsoft.OpenApi.Models.OpenApiLicense()
+                    {
+                        Name = "Apache License Version 2.0",
+                        Url = new Uri("https://www.apache.org/licenses/LICENSE-2.0")
+                    }
+                });
+
+
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"JWT authorization header using the Carrier scheme. 
+Type 'Bearer', a blank space and then 
+Your accessToken obtained via the '/Users/Logon' route in the text box below.
+e.g: 'Bearer LKJ2H4323llkjl23'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                        {
+                          new OpenApiSecurityScheme
+                          {
+                            Reference = new OpenApiReference
+                              {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                              },
+                              Scheme = "oauth2",
+                              Name = "Bearer",
+                              In = ParameterLocation.Header,
+
+                            },
+                            new List<string>()
+                          }
+                 });
+
+
+                var xmlFile = Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
+                c.IncludeXmlComments(xmlFile);
+
+
+
+
+            });
+
+            #endregion
 
         }
 
@@ -117,6 +188,15 @@ namespace TaskManager
                 ((TaskManagerContext)context).Database.EnsureCreated();
             }
 
+            #region Enable Swagger
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger Sample");
+            });
+            #endregion
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -124,7 +204,6 @@ namespace TaskManager
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
@@ -141,6 +220,10 @@ namespace TaskManager
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+
+
+
         }
     }
 }

@@ -10,25 +10,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Models;
 using TM_Task = TaskManager.Models.Task;
-namespace TaskManager.Controllers
+namespace TaskManager.Controllers.API
 {
+
+    ///<summary>Task Management Routes</summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
     public class TasksController : ControllerBase
     {
         private readonly TaskManagerContext _context;
         private User _currentUserData = null;
-        public TasksController(Models.ITaskManagerContext context)
+        /// <summary>Initializes the controller</summary>
+        public TasksController(ITaskManagerContext context)
         {
             _context = (TaskManagerContext)context;
 
-            
+
 
         }
-        
+
 
         // GET: api/Tasks
+        ///<summary>Get user task list</summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TM_Task>>> GetTask()
         {
@@ -39,7 +44,7 @@ namespace TaskManager.Controllers
 
         private User GetCurrentUserData()
         {
-           
+
             try
             {
                 _currentUserData = _currentUserData ?? _context.User.Find(long.Parse(User.Identity.Name));
@@ -53,7 +58,11 @@ namespace TaskManager.Controllers
         }
 
         // GET: api/Tasks/5
+        ///<summary>Get user task by id</summary>
         [HttpGet("{id}")]
+
+        [ProducesResponseType(200, Type = typeof(TM_Task))]
+        [ProducesResponseType(404, Type = typeof(void))]
         public async Task<ActionResult<TM_Task>> GetTask(long id)
         {
             User UserData = GetCurrentUserData();
@@ -64,21 +73,23 @@ namespace TaskManager.Controllers
                 return NotFound();
             }
             return await System.Threading.Tasks.Task.Run(() => { return Ok(_knownTask); });
-         
+
         }
 
         // PUT: api/Tasks/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
+        ///<summary>Update user task by id and Task Data</summary>
         [HttpPut("{id}")]
+
+        [ProducesResponseType(204, Type = typeof(void))]
+        [ProducesResponseType(404, Type = typeof(void))]
         public async Task<IActionResult> PutTask(long id, TM_Task task)
         {
-            if (id != task.Id && task.Id>0)
+            if (id != task.Id && task.Id > 0)
             {
                 return BadRequest();
             }
             User UserData = GetCurrentUserData();
-            var _knownTask = _context.Task.Where(x => x.Id == id && x.UserId ==  UserData.Id).FirstOrDefault();
+            var _knownTask = _context.Task.Where(x => x.Id == id && x.UserId == UserData.Id).FirstOrDefault();
             if (_knownTask == null)
             {
                 return NotFound();
@@ -109,9 +120,9 @@ namespace TaskManager.Controllers
         }
 
         // POST: api/Tasks
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
+        ///<summary>Add user task</summary>
         [HttpPost]
+        [ProducesResponseType(201, Type = typeof(void))]
         public async Task<ActionResult<TM_Task>> PostTask(TM_Task task)
         {
             User UserData = GetCurrentUserData();
@@ -126,7 +137,10 @@ namespace TaskManager.Controllers
 
 
         // POST: api/Tasks/SetConcluded/5
+        ///<summary>Set user task as concluded</summary>
         [HttpPost("~/api/[controller]/{id}/SetConcluded")]
+        [ProducesResponseType(200, Type = typeof(TM_Task))]
+        [ProducesResponseType(404, Type = typeof(void))]
         public async Task<ActionResult<TM_Task>> SetConcluded(long id)
         {
             User UserData = GetCurrentUserData();
@@ -146,7 +160,10 @@ namespace TaskManager.Controllers
         }
 
         // DELETE: api/Tasks/5
+        ///<summary>Delete user task</summary>
         [HttpDelete("{id}")]
+        [ProducesResponseType(200, Type = typeof(TM_Task))]
+        [ProducesResponseType(404, Type = typeof(void))]
         public async Task<ActionResult<TM_Task>> DeleteTask(long id)
         {
             User UserData = GetCurrentUserData();

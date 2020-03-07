@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -14,22 +15,29 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TaskManager.Models;
 
-namespace TaskManager.Controllers
+namespace TaskManager.Controllers.API
 {
-    [Route("api/Users/{action=Index}/{id?}")]
+
+
+    /// <summary>
+    /// User Management routes
+    /// </summary>
+    [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UsersAPIController : ControllerBase
+
+    public class UsersController : ControllerBase
     {
         private readonly TaskManagerContext _context;
 
-        public UsersAPIController(ITaskManagerContext context)
+        public UsersController(ITaskManagerContext context)
         {
             _context = (TaskManagerContext)context;
         }
+
         public static User CheckSignin(Signin signin, TaskManagerContext context)
         {
             User user = null;
-            if (signin.Email != null && signin.Password!=null)
+            if (signin.Email != null && signin.Password != null)
             {
                 user = context.User.Where(x => x.Email == signin.Email.Trim()).FirstOrDefault();
 
@@ -43,7 +51,7 @@ namespace TaskManager.Controllers
                         user = null;
                     }
                 }
-                
+
 
             }
 
@@ -66,14 +74,22 @@ namespace TaskManager.Controllers
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             byte[] bytes = new byte[512];
             rng.GetBytes(bytes);
-            return System.Text.Encoding.UTF8.GetString(bytes); ;
+            return Encoding.UTF8.GetString(bytes); ;
         }
 
 
-        
 
+        /// <summary>
+        /// Perform logon and returns JWT Token Info.
+        /// </summary>
+        /// <param name="Signin">Signin Data</param>
+        /// <param name="signingConfigurations"></param>
+        /// <param name="tokenConfigurations"></param> 
         [AllowAnonymous]
         [HttpPost]
+        [ActionName("Logon")]
+        [ProducesResponseType(200, Type = typeof(LogonResult))]
+        [ProducesResponseType(401, Type = typeof(LogonResult))]
         public Task<ActionResult<LogonResult>> Logon(
             [FromBody]Signin Signin,
             [FromServices]SigningConfigurations signingConfigurations,
@@ -96,13 +112,13 @@ namespace TaskManager.Controllers
                     return StatusCode(401, result);
                 });
             }
-            
+
 
 
 
         }
         [NonAction]
-        public static LogonResult PerformLogon(Signin Signin, SigningConfigurations signingConfigurations, TokenConfigurations tokenConfigurations,TaskManagerContext context)
+        public static LogonResult PerformLogon(Signin Signin, SigningConfigurations signingConfigurations, TokenConfigurations tokenConfigurations, TaskManagerContext context)
         {
             bool isLoginValid = false;
             User user = null;

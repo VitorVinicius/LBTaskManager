@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Models;
 
-namespace TaskManager.Controllers
+namespace TaskManager.Controllers.MVC
 {
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class UsersController : Controller
@@ -55,7 +55,7 @@ namespace TaskManager.Controllers
             [FromServices]TokenConfigurations tokenConfigurations)
         {
             ViewData["ReturnUrl"] = ReturnUrl;
-            LogonResult logonResult = UsersAPIController.PerformLogon(signin, signingConfigurations, tokenConfigurations, _context);
+            LogonResult logonResult = API.UsersController.PerformLogon(signin, signingConfigurations, tokenConfigurations, _context);
 
             if (logonResult.Authenticated)
             {
@@ -159,10 +159,10 @@ namespace TaskManager.Controllers
 
             if (ModelState.IsValid)
             {
-                string pSalt = UsersAPIController.GeneratePasswordSalt();
+                string pSalt = API.UsersController.GeneratePasswordSalt();
 
                 user.PasswordSalt = pSalt;
-                string pwdHash = UsersAPIController.GeneratePasswordHash(user.Password, pSalt);
+                string pwdHash = API.UsersController.GeneratePasswordHash(user.Password, pSalt);
 
                 user.PassworhHash = pwdHash;
 
