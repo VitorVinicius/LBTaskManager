@@ -5,6 +5,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace TaskManager.Models
 {
+
+    public interface ITaskManagerContext
+    {
+        //service interface only
+    }
+    ///<summary>Task Manager Database context. Use this to manage stored tasks and users</summary>
     public partial class TaskManagerContext : DbContext, ITaskManagerContext
     {
         public TaskManagerContext()
@@ -15,8 +21,9 @@ namespace TaskManager.Models
             : base(options)
         {
         }
-
+        ///<summary>Task Entity Table</summary>
         public virtual DbSet<Task> Task { get; set; }
+        ///<summary>User Entity Table</summary>
         public virtual DbSet<User> User { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -34,7 +41,7 @@ namespace TaskManager.Models
                 optionsBuilder.UseSqlServer(configuration.GetConnectionString("TaskManagerDatabase"));
             }
         }
-
+        ///<summary>Configure ORM and create database if not exists</summary>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Task>(entity =>
