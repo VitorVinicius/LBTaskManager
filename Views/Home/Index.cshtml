@@ -6,7 +6,7 @@
         <div class="col-md-12">
             <div class="jumbotron jumbotron-top-mini">
                 <h2>
-                    Welcome @((ViewData["UserData"] as TaskManager.Models.User).Firstname)!
+                    Welcome @((ViewData["UserData"] as TaskManager.Models.User)?.Firstname)!
                 </h2>
                 <p><strong>My Tasks</strong></p>
                 <p>

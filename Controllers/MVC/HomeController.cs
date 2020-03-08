@@ -39,15 +39,19 @@ namespace TaskManager.Controllers.MVC
             User UserData = GetCurrentUserData();
             ViewData.Add("UserData", UserData);
 
-            //Share JWT Token with Browser by Cookie
-            Response.Cookies.Append(
-                    "AccessToken",
-                     API.UsersController.PerformLogon(signingConfigurations, tokenConfigurations, UserData).AccessToken,
-                    new Microsoft.AspNetCore.Http.CookieOptions()
-                    {
-                        Path = "/"
-                    }
-                );
+            if (UserData != null)
+            {
+                //Share JWT Token with Browser by Cookie
+                Response.Cookies.Append(
+                        "AccessToken",
+                         API.UsersController.PerformLogon(signingConfigurations, tokenConfigurations, UserData).AccessToken,
+                        new Microsoft.AspNetCore.Http.CookieOptions()
+                        {
+                            Path = "/"
+                        }
+                    );
+            }
+            
             return View();
         }
 

@@ -163,6 +163,7 @@ namespace TaskManager.Controllers.API
         [NonAction]
         public static LogonResult PerformLogon(SigningConfigurations signingConfigurations, TokenConfigurations tokenConfigurations, User user)
         {
+            if (user == null) return null;
             ClaimsIdentity identity = new ClaimsIdentity(
                                 new GenericIdentity(user.Id.ToString(), "Login"),
                                 new[] {
