@@ -1,0 +1,299 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TaskManager</name>
+    </assembly>
+    <members>
+        <member name="T:TaskManager.Controllers.API.TasksController">
+            <summary>Task Management Routes</summary>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.#ctor(TaskManager.Models.ITaskManagerContext)">
+            <summary>Initializes the controller</summary>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.GetTask">
+            <summary>Get user task list</summary>
+            <returns>Task List</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.GetCurrentUserData">
+            <summary>
+            Get Current Logged User Data
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.GetTask(System.Int64)">
+            <summary>Get user task by id</summary>
+            <returns>Task Data</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.PutTask(System.Int64,TaskManager.Models.Task)">
+            <summary>Update user task by id and Task Data</summary>
+            <returns>New Task Data Stored Changes</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.PostTask(TaskManager.Models.Task)">
+            <summary>Add user task</summary>
+            <returns>New Task Stored</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.SetConcluded(System.Int64)">
+            <summary>Set user task as concluded</summary>
+            <returns>Task Changes</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.DeleteTask(System.Int64)">
+            <summary>Delete user task</summary>
+            <returns>Task Data before deletion</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.TasksController.TaskExists(System.Int64)">
+            <summary>
+            Check Task exists
+            </summary>
+            <param name="id">Task Id</param>
+            <returns>true if exists, false if not</returns>
+        </member>
+        <member name="T:TaskManager.Controllers.API.UsersController">
+            <summary>
+            User Management routes
+            </summary>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.Logon(TaskManager.Models.Signin,TaskManager.Models.SigningConfigurations,TaskManager.Models.TokenConfigurations)">
+            <summary>
+            Perform logon and returns JWT Token Info.
+            </summary>
+            <param name="Signin">Logon data. Email and password</param>
+            <param name="signingConfigurations">Service provided signing configurations</param>
+            <param name="tokenConfigurations">Service provided token configurations</param>
+            <returns>JWT Token Info</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.PerformLogon(TaskManager.Models.Signin,TaskManager.Models.SigningConfigurations,TaskManager.Models.TokenConfigurations,TaskManager.Models.TaskManagerContext)">
+            <summary>
+            Process User provided Signin data
+            </summary>
+            <param name="Signin">Logon data. Email and password</param>
+            <param name="signingConfigurations">Service provided signing configurations</param>
+            <param name="tokenConfigurations">Service provided token configurations</param>
+            <param name="context">The Task Manager Database Context</param>
+            <returns>Logon results with JWT Data</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.PerformLogon(TaskManager.Models.SigningConfigurations,TaskManager.Models.TokenConfigurations,TaskManager.Models.User)">
+            <summary>
+            Process system provided User Signin data
+            </summary>
+            <param name="signingConfigurations">Service provided signing configurations</param>
+            <param name="tokenConfigurations">Service provided token configurations</param>
+            <param name="user">User to get logon data and JWT Token</param>
+            <returns>Logon results with JWT Data</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.Get">
+            <summary>Get current logged user data</summary>
+            <returns>User Data</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.GetCurrentUserData">
+            <summary>
+            Get Current Logged User Data
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.Update(TaskManager.Models.User)">
+            <summary>Update current logged User</summary>
+            <returns>New User Data Stored Changes</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.Create(TaskManager.Models.User)">
+            <summary>Create user</summary>
+            <returns>New User Created</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.ValidateUserData(TaskManager.Models.User)">
+            <summary>
+            Validate user provided data
+            </summary>
+            <param name="user">User's data</param>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.Delete">
+            <summary>Delete current logged user</summary>
+            <returns>User Data before deletion</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.UserExists(System.Int64)">
+            <summary>
+            Check user exists
+            </summary>
+            <param name="id">The User's Id</param>
+            <returns>true if exists, false if not</returns>
+        </member>
+        <member name="T:TaskManager.Controllers.MVC.HomeController">
+            <summary>
+            Default place to Task Management
+            </summary>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.HomeController.Error">
+            <summary>
+            Default page error
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TaskManager.Controllers.MVC.UsersController">
+            <summary>
+            MVC Controller to manage Users
+            </summary>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.Index">
+            <summary>
+            Show users. Disabled functionality. Its redirects to My Account page
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.Signin(System.String)">
+            <summary>
+            Logon page
+            </summary>
+            <param name="ReturnUrl">Callback url</param>
+            <returns></returns>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.Signin(System.String,TaskManager.Models.Signin,TaskManager.Models.SigningConfigurations,TaskManager.Models.TokenConfigurations)">
+            <summary>
+            Logon page destination. Process user provided logon data.
+            </summary>
+            <param name="ReturnUrl">The callback URL</param>
+            <param name="signin">Logon data. Email and password</param>
+            <param name="signingConfigurations">Service provided signing configurations</param>
+            <param name="tokenConfigurations">Service provided token configurations</param>
+            <returns>Callback redirection</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.Signout">
+            <summary>
+            Make users Logoff and redirect to Signin page
+            </summary>
+            <returns>Signin page</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.Details">
+            <summary>
+            Users account details
+            </summary>
+            <returns>Users account details page</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.Signup">
+            <summary>
+            Page to register new user
+            </summary>
+            <returns>New user form</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.Signup(TaskManager.Models.User)">
+            <summary>
+            Process and register new User data amd redirect to Signin page
+            </summary>
+            <param name="user">New User's data</param>
+            <returns>Create User creation results</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.ValidateUserData(TaskManager.Models.User)">
+            <summary>
+            Validate user provided data
+            </summary>
+            <param name="user">User's data</param>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.Account">
+            <summary>
+            Users account page
+            </summary>
+            <returns>User's account data</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.Account(TaskManager.Models.User)">
+            <summary>
+            Process users data changes
+            </summary>
+            <param name="user">New user's data</param>
+            <returns>User's data changes results</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.Delete">
+            <summary>
+            Delete User Account page
+            </summary>
+            <returns>User's account deletion page</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.DeleteConfirmed">
+            <summary>
+            Process User Account deletion
+            </summary>
+            <returns>User's account deletion results</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.MVC.UsersController.UserExists(System.Int64)">
+            <summary>
+            Check user exists
+            </summary>
+            <param name="id">The User's Id</param>
+            <returns>true if exists, false if not</returns>
+        </member>
+        <member name="P:TaskManager.Models.LogonResult.Authenticated">
+            <summary>Successfully authenticated flag</summary>
+        </member>
+        <member name="P:TaskManager.Models.LogonResult.Created">
+            <summary>JWT token creation date</summary>
+        </member>
+        <member name="P:TaskManager.Models.LogonResult.Expiration">
+            <summary>JWT token Expiration date</summary>
+        </member>
+        <member name="P:TaskManager.Models.LogonResult.AccessToken">
+            <summary>JWT AccessToken</summary>
+        </member>
+        <member name="P:TaskManager.Models.LogonResult.Message">
+            <summary>Logon Result Message</summary>
+        </member>
+        <member name="P:TaskManager.Models.Signin.Email">
+            <summary>User Email</summary>
+        </member>
+        <member name="P:TaskManager.Models.Signin.Password">
+            <summary>User Password</summary>
+        </member>
+        <member name="P:TaskManager.Models.Task.Id">
+            <summary>Record List</summary>
+        </member>
+        <member name="P:TaskManager.Models.Task.Description">
+            <summary>Task Description</summary>
+        </member>
+        <member name="P:TaskManager.Models.Task.Concluded">
+            <summary>Task Status Flag</summary>
+        </member>
+        <member name="P:TaskManager.Models.Task.UserId">
+            <summary>Owner user ID</summary>
+        </member>
+        <member name="P:TaskManager.Models.Task.User">
+            <summary>Owner user</summary>
+        </member>
+        <member name="T:TaskManager.Models.TaskManagerContext">
+            <summary>Task Manager Database context. Use this to manage stored tasks and users</summary>
+        </member>
+        <member name="P:TaskManager.Models.TaskManagerContext.Task">
+            <summary>Task Entity Table</summary>
+        </member>
+        <member name="P:TaskManager.Models.TaskManagerContext.User">
+            <summary>User Entity Table</summary>
+        </member>
+        <member name="M:TaskManager.Models.TaskManagerContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>Configure ORM and create database if not exists</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Id">
+            <summary>Record Id</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Firstname">
+            <summary>User's fistname</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Lastname">
+            <summary>User's lastname</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Email">
+            <summary>User's Email</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Password">
+            <summary>User password. Used only on create/edit account. This is not stored in database</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.PassworhHash">
+            <summary>User password hash. Provides a secure way to store credential information</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.PasswordSalt">
+            <summary>User password salt. Help compares passwords on logon process. Provides a secure way to store credential information</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.RegistrationDate">
+            <summary>User's Registration Date</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.LastUpdateDate">
+            <summary>User's Last Update Date</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Task">
+            <summary>User's Task List</summary>
+        </member>
+    </members>
+</doc>
