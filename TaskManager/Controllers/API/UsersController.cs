@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -8,6 +9,7 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,10 +26,11 @@ namespace TaskManager.Controllers.API
     /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
-
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : ControllerBase
     {
         private readonly TaskManagerContext _context;
+        private User _currentUserData = null;
 
         public UsersController(ITaskManagerContext context)
         {
@@ -200,10 +203,221 @@ namespace TaskManager.Controllers.API
                 Principal = new ClaimsPrincipal(identity)
             };
         }
+
+
+
+
+        // GET: api/Users/Get
+        ///<summary>Get current logged user data</summary>
+        ///<returns>User Data</returns>
+        [HttpGet]
+        public async Task<ActionResult<User>> Get()
+        {
+            User UserData = GetCurrentUserData();
+            var _knownUser = _context.User.Where(x => x.Id == UserData.Id)?.FirstOrDefault();
+            return await System.Threading.Tasks.Task.Run(() => { return Ok(_knownUser); });
+        }
+
+        /// <summary>
+        /// Get Current Logged User Data
+        /// </summary>
+        /// <returns></returns>
+        private User GetCurrentUserData()
+        {
+
+            try
+            {
+                _currentUserData = _currentUserData ?? _context.User.Find(long.Parse(User.Identity.Name));
+            }
+            catch
+            {
+                //Do nothing here yet
+            }
+
+            return _currentUserData;
+        }
+
+
+
+        // PUT: api/Users/Update
+        ///<summary>Update current logged User</summary>
+        ///<returns>New User Data Stored Changes</returns>
+        [HttpPut]
+        [ProducesResponseType(204, Type = typeof(void))]
+        [ProducesResponseType(404, Type = typeof(void))]
+        public async Task<IActionResult> Update(User User)
+        {
+            
+            User UserData = GetCurrentUserData();
+
+            UserData.Firstname = User.Firstname;
+            UserData.Lastname = User.Lastname;
+            UserData.Email = User.Email;
+            UserData.LastUpdateDate = DateTime.UtcNow;
+
+
+            if (string.IsNullOrEmpty(User.Password) == false)
+            {
+                //Process password change
+                string pSalt = GeneratePasswordSalt();
+
+                User.PasswordSalt = pSalt;
+                string pwdHash = GeneratePasswordHash(User.Password, pSalt);
+
+                User.PassworhHash = pwdHash;
+
+                User.Password = null;
+            }
+
+
+            List<string> errors = ValidateUserData(User);
+
+            if (_context.User.Any(u => u.Email == User.Email && u.Id!= UserData.Id))
+            {
+                errors?.Add("This email is already associated with another account.");
+            }
+
+            if (errors?.Count > 0)
+            {
+                throw new AggregateException(errors.Select(x => new Exception(x)));
+            }
+            else
+            {
+
+
+                _context.Entry(UserData).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw;
+                }
+
+                return NoContent();
+            }
+        }
+
+        // POST: api/Users/Create
+        ///<summary>Create user</summary>
+        ///<returns>New User Created</returns>
+        [HttpPost]
+        [ProducesResponseType(201, Type = typeof(void))]
+        [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+        [AllowAnonymous]
+        public async Task<ActionResult<User>> Create(User User)
+        {
+
+            List<string> errors = ValidateUserData(User);
+
+            if (_context.User.Any(u => u.Email == User.Email))
+            {
+                errors?.Add("This email is already associated with another account.");
+            }
+
+            if (string.IsNullOrEmpty(User.Password?.Trim()))
+            {
+                errors?.Add("Password must be provided");
+            }
+
+            if (errors?.Count > 0)
+            {
+
+               
+                ProblemDetails problemDetail = new ProblemDetails()
+                {
+                    Detail = string.Join('\n', errors),
+                    Instance = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                    Status = 400,
+                    Title = "Invalid Data Provided",
+
+                };
+                int errIndex = 0;
+                foreach (string error in errors)
+                {
+                    problemDetail.Extensions?.Add(new KeyValuePair<string, object>(errIndex.ToString(), error));
+                }
+
+               
+                return base.BadRequest(problemDetail);
+            }
+            else
+            {
+                //Store Credentials in Hash Format with password plain text
+                string pSalt = GeneratePasswordSalt();
+
+                User.PasswordSalt = pSalt;
+                string pwdHash = GeneratePasswordHash(User.Password, pSalt);
+
+                User.PassworhHash = pwdHash;
+
+                User.Password = null;
+
+                _context.User.Add(User);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetUser", new { id = User.Id }, User);
+            }
+            
+        }
+
+
+        /// <summary>
+        /// Validate user provided data
+        /// </summary>
+        /// <param name="user">User's data</param>
+        private List<string>  ValidateUserData(User user)
+        {
+            List<string> errors = new List<string>();
+            if (string.IsNullOrEmpty(user.Firstname?.Trim()))
+            {
+                errors.Add("Firstname is required");
+            }
+            if (string.IsNullOrEmpty(user.Lastname?.Trim()))
+            {
+                errors.Add("Lastname is required");
+            }
+            if (string.IsNullOrEmpty(user.Email?.Trim()))
+            {
+                errors.Add( "Email is required");
+            }
+            if (user.Email?.Contains("@") == false)
+            {
+                errors.Add("Invalid email, must have an '@'.");
+            }
+
+            
+
+
+            return errors;
+        }
+
+
+        // DELETE: api/Users/Delete
+        ///<summary>Delete current logged user</summary>
+        ///<returns>User Data before deletion</returns>
+        [HttpDelete]
+        [ProducesResponseType(200, Type = typeof(User))]
+        [ProducesResponseType(404, Type = typeof(void))]
+        public async Task<ActionResult<User>> Delete()
+        {
+            User UserData = GetCurrentUserData();
+           
+
+            _context.User.Remove(UserData);
+            await _context.SaveChangesAsync();
+
+            return UserData;
+        }
+
+
+
         /// <summary>
         /// Check user exists
         /// </summary>
-        /// <param name="id">Rhe User's Id</param>
+        /// <param name="id">The User's Id</param>
         /// <returns>true if exists, false if not</returns>
         private bool UserExists(long id)
         {

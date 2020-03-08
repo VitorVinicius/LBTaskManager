@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
-namespace TaskManager.Models
+﻿namespace TaskManager.Models
 {
     public partial class Task
     {
@@ -15,7 +11,8 @@ namespace TaskManager.Models
         ///<summary>Owner user ID</summary>
         public long UserId { get; set; }
         ///<summary>Owner user</summary>
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual User User { get; set; }
     }
 }

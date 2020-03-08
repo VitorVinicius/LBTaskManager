@@ -80,11 +80,39 @@
             <param name="user">User to get logon data and JWT Token</param>
             <returns>Logon results with JWT Data</returns>
         </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.Get">
+            <summary>Get current logged user data</summary>
+            <returns>User Data</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.GetCurrentUserData">
+            <summary>
+            Get Current Logged User Data
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.Update(TaskManager.Models.User)">
+            <summary>Update current logged User</summary>
+            <returns>New User Data Stored Changes</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.Create(TaskManager.Models.User)">
+            <summary>Create user</summary>
+            <returns>New User Created</returns>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.ValidateUserData(TaskManager.Models.User)">
+            <summary>
+            Validate user provided data
+            </summary>
+            <param name="user">User's data</param>
+        </member>
+        <member name="M:TaskManager.Controllers.API.UsersController.Delete">
+            <summary>Delete current logged user</summary>
+            <returns>User Data before deletion</returns>
+        </member>
         <member name="M:TaskManager.Controllers.API.UsersController.UserExists(System.Int64)">
             <summary>
             Check user exists
             </summary>
-            <param name="id">Rhe User's Id</param>
+            <param name="id">The User's Id</param>
             <returns>true if exists, false if not</returns>
         </member>
         <member name="T:TaskManager.Controllers.MVC.HomeController">
@@ -186,7 +214,7 @@
             <summary>
             Check user exists
             </summary>
-            <param name="id">Rhe User's Id</param>
+            <param name="id">The User's Id</param>
             <returns>true if exists, false if not</returns>
         </member>
         <member name="P:TaskManager.Models.LogonResult.Authenticated">
@@ -248,6 +276,15 @@
         </member>
         <member name="P:TaskManager.Models.User.Email">
             <summary>User's Email</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.Password">
+            <summary>User password. Used only on create/edit account. This is not stored in database</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.PassworhHash">
+            <summary>User password hash. Provides a secure way to store credential information</summary>
+        </member>
+        <member name="P:TaskManager.Models.User.PasswordSalt">
+            <summary>User password salt. Help compares passwords on logon process. Provides a secure way to store credential information</summary>
         </member>
         <member name="P:TaskManager.Models.User.RegistrationDate">
             <summary>User's Registration Date</summary>

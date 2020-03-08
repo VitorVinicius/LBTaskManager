@@ -366,7 +366,7 @@ namespace TaskManager.Controllers.MVC
         /// <summary>
         /// Check user exists
         /// </summary>
-        /// <param name="id">Rhe User's Id</param>
+        /// <param name="id">The User's Id</param>
         /// <returns>true if exists, false if not</returns>
         private bool UserExists(long id)
         {
