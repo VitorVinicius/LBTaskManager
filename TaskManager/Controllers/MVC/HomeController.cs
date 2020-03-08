@@ -17,6 +17,9 @@ using TaskManager.Models;
 
 namespace TaskManager.Controllers.MVC
 {
+    /// <summary>
+    /// Default place to Task Management
+    /// </summary>
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class HomeController : Controller
     {
@@ -32,8 +35,11 @@ namespace TaskManager.Controllers.MVC
         public IActionResult Index([FromServices]SigningConfigurations signingConfigurations,
             [FromServices]TokenConfigurations tokenConfigurations)
         {
+
             User UserData = GetCurrentUserData();
             ViewData.Add("UserData", UserData);
+
+            //Share JWT Token with Browser by Cookie
             Response.Cookies.Append(
                     "AccessToken",
                      API.UsersController.PerformLogon(signingConfigurations, tokenConfigurations, UserData).AccessToken,
@@ -44,6 +50,11 @@ namespace TaskManager.Controllers.MVC
                 );
             return View();
         }
+
+        /// <summary>
+        /// Default page error
+        /// </summary>
+        /// <returns></returns>
         [AllowAnonymous]
         public IActionResult Error()
         {

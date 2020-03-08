@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http.Controllers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Models;
 using TM_Task = TaskManager.Models.Task;
+
+
 namespace TaskManager.Controllers.API
 {
 
@@ -34,6 +33,7 @@ namespace TaskManager.Controllers.API
 
         // GET: api/Tasks
         ///<summary>Get user task list</summary>
+        ///<returns>Task List</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TM_Task>>> GetTask()
         {
@@ -42,6 +42,10 @@ namespace TaskManager.Controllers.API
             return await System.Threading.Tasks.Task.Run(() => { return Ok(_knownTask?.ToList() ?? new List<TM_Task>()); });
         }
 
+        /// <summary>
+        /// Get Current Logged User Data
+        /// </summary>
+        /// <returns></returns>
         private User GetCurrentUserData()
         {
 
@@ -59,8 +63,8 @@ namespace TaskManager.Controllers.API
 
         // GET: api/Tasks/5
         ///<summary>Get user task by id</summary>
+        ///<returns>Task Data</returns>
         [HttpGet("{id}")]
-
         [ProducesResponseType(200, Type = typeof(TM_Task))]
         [ProducesResponseType(404, Type = typeof(void))]
         public async Task<ActionResult<TM_Task>> GetTask(long id)
@@ -78,8 +82,8 @@ namespace TaskManager.Controllers.API
 
         // PUT: api/Tasks/5
         ///<summary>Update user task by id and Task Data</summary>
+        ///<returns>New Task Data Stored Changes</returns>
         [HttpPut("{id}")]
-
         [ProducesResponseType(204, Type = typeof(void))]
         [ProducesResponseType(404, Type = typeof(void))]
         public async Task<IActionResult> PutTask(long id, TM_Task task)
@@ -121,6 +125,7 @@ namespace TaskManager.Controllers.API
 
         // POST: api/Tasks
         ///<summary>Add user task</summary>
+        ///<returns>New Task Stored</returns>
         [HttpPost]
         [ProducesResponseType(201, Type = typeof(void))]
         public async Task<ActionResult<TM_Task>> PostTask(TM_Task task)
@@ -138,6 +143,7 @@ namespace TaskManager.Controllers.API
 
         // POST: api/Tasks/SetConcluded/5
         ///<summary>Set user task as concluded</summary>
+        ///<returns>Task Changes</returns>
         [HttpPost("~/api/[controller]/{id}/SetConcluded")]
         [ProducesResponseType(200, Type = typeof(TM_Task))]
         [ProducesResponseType(404, Type = typeof(void))]
@@ -161,6 +167,7 @@ namespace TaskManager.Controllers.API
 
         // DELETE: api/Tasks/5
         ///<summary>Delete user task</summary>
+        ///<returns>Task Data before deletion</returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(200, Type = typeof(TM_Task))]
         [ProducesResponseType(404, Type = typeof(void))]
@@ -178,7 +185,11 @@ namespace TaskManager.Controllers.API
 
             return _knownTask;
         }
-
+        /// <summary>
+        /// Check Task exists
+        /// </summary>
+        /// <param name="id">Task Id</param>
+        /// <returns>true if exists, false if not</returns>
         private bool TaskExists(long id)
         {
             return _context.Task.Any(e => e.Id == id);

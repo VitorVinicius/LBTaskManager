@@ -15,18 +15,18 @@
             <div class="form-group">
                 <input value="@(ViewData["ReturnUrl"])" name="ReturnUrl" type="hidden"/>
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" placeholder="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" type="password" class="form-control" />
+                <input asp-for="Password" placeholder="Password" type="password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group">
 
-                <input type="submit" value="Sign In" class="btn btn-primary" />
-                <a href="/Users/Signup" class="btn btn-success">Register me</a>
+                <input type="submit" title="Sign In to your account" value="Sign In" class="btn btn-primary" />
+                <a href="/Users/Signup" title="Create your account" class="btn btn-success">Register me</a>
             </div>
         </form>
     </div>

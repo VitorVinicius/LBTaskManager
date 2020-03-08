@@ -28,11 +28,11 @@ function loadTasks() {
                 var itemClass = "list-group-item-success";
 
                 $(targetContainer).append(
-                    `<a class="list-group-item list-group-item-action ${itemClass}  d-flex justify-content-between" id="list-home-list" data-toggle="list" href="#list-task-${obj.id}" role="tab" aria-controls="task-${obj.id}">
+                    `<a title="Click to manage Task ${obj.description}" class="list-group-item list-group-item-action ${itemClass}  d-flex justify-content-between" id="list-home-list" data-toggle="list" href="#list-task-${obj.id}" role="tab" aria-controls="task-${obj.id}">
                         
                         <p class="p-0 m-0 flex-grow-1"> <i class="fas fa-check-square"></i>  ${obj.description}</p>
                         <span class="pull-right">
-                            <span class="btn btn-xs btn-default" onclick="showDeleteTaskModal(event,{description:'${obj.description}',id:${obj.id},concluded:${obj.concluded}})">
+                            <span title="Delete task" class="btn btn-xs btn-default" onclick="showDeleteTaskModal(event,{description:'${obj.description}',id:${obj.id},concluded:${obj.concluded}})">
                                 <i class="fas fa-trash-alt"></i>
                             </span>
                         </span>
@@ -45,17 +45,17 @@ function loadTasks() {
                 var itemClass = "list-group-item-warning";
 
                 $(targetContainer).append(
-                    `<a class="list-group-item list-group-item-action ${itemClass}  d-flex justify-content-between" id="list-home-list" data-toggle="list" href="#list-task-${obj.id}" role="tab" aria-controls="task-${obj.id}">
+                    `<a title="Click to manage Task '${obj.description}'" class="list-group-item list-group-item-action ${itemClass}  d-flex justify-content-between" id="list-home-list" data-toggle="list" href="#list-task-${obj.id}" role="tab" aria-controls="task-${obj.id}">
                          
                         <p class="p-0 m-0 flex-grow-1"><i class="fas fa-square"></i> ${obj.description}</p>
                         <span class="pull-right">
-                            <span class="btn btn-xs btn-default" onclick="setTaskIsConcluded(event,${obj.id})">
+                            <span title="Mark as concluded" class="btn btn-xs btn-default" onclick="setTaskIsConcluded(event,${obj.id})">
                                 <i class="far fa-check-circle"></i>
                             </span>
-                            <span class="btn btn-xs btn-default" onclick="showUpdateTaskModal(event,{description:'${obj.description}',id:${obj.id},concluded:${obj.concluded}})">
+                            <span title="Update description" class="btn btn-xs btn-default" onclick="showUpdateTaskModal(event,{description:'${obj.description}',id:${obj.id},concluded:${obj.concluded}})">
                                 <i class="fas fa-pencil-alt"></i>
                             </span>
-                            <span class="btn btn-xs btn-default" onclick="showDeleteTaskModal(event,{description:'${obj.description}',id:${obj.id},concluded:${obj.concluded}})">
+                            <span title="Delete task" class="btn btn-xs btn-default" onclick="showDeleteTaskModal(event,{description:'${obj.description}',id:${obj.id},concluded:${obj.concluded}})">
                                 <i class="fas fa-trash-alt"></i>
                             </span>
                         </span>
@@ -95,12 +95,42 @@ function loadTasks() {
     });
 }
 
+
+function showNewTaskModal(event) {
+    
+    $('#modal-container-new-task').modal('show');
+    $("#newTaskDescription").unbind("keypress");
+    $('#newTaskDescription').keypress(function (event) {
+        if (event.keyCode == 13) {
+            confirmNewTask();
+            event.preventDefault();
+        }
+    });
+    setTimeout(function(){
+        $('#newTaskDescription').focus();
+    }, 300)
+    
+
+    event.stopPropagation();
+}
+
 function showUpdateTaskModal(event, taskData) {
     $("#update-task-id").val(taskData.id);
     $("#update-task-concluded").val(taskData.concluded);
     $('#update-task-id-label').text(taskData.id);
     $('#update-task-description-label').text(taskData.description);
     $('#modal-container-update-task').modal('show');
+    $("#newDescription").unbind("keypress");
+    $('#newDescription').keypress(function (event) {
+        if (event.keyCode == 13) {
+            confirmUpdateTask();
+            event.preventDefault();
+        }
+    });
+
+    setTimeout(function () {
+        $('#newDescription').focus();
+    }, 300)
     event.stopPropagation();
 }
 
@@ -114,6 +144,10 @@ function showDeleteTaskModal(event, taskData) {
         confirmDeleteTask(taskData.id);
         $("#delete-task-id").unbind("click");
     });
+    
+    setTimeout(function () {
+        $('#delete-task-id').focus();
+    }, 300)
     event.stopPropagation();
 }
 
@@ -142,6 +176,10 @@ function confirmNewTask() {
     var newTaskDescription = $('#newTaskDescription').val();
     var concluded = false;
 
+    if (!newTaskDescription) {
+        return;
+    }
+
     var settings = {
         "url": "/api/Tasks/",
         "method": "POST",
@@ -166,6 +204,10 @@ function confirmUpdateTask() {
     var taskId = $('#update-task-id').val();
     var newDescription = $('#newDescription').val();
     var concluded = $("#update-task-concluded").val();
+
+    if (!newDescription) {
+        return;
+    }
 
     var settings = {
         "url": "/api/Tasks/" + taskId,
@@ -227,5 +269,9 @@ function getCookie(cname) {
     return "";
 }
 
-
+function ignoreEnterKey(event) {
+    if (event.which == '13') {
+        return event.preventDefault();
+    }
+}
 

@@ -15,6 +15,9 @@ using TaskManager.Models;
 
 namespace TaskManager.Controllers.MVC
 {
+    /// <summary>
+    /// MVC Controller to manage Users
+    /// </summary>
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class UsersController : Controller
     {
@@ -26,6 +29,10 @@ namespace TaskManager.Controllers.MVC
         }
 
         // GET: Users
+        /// <summary>
+        /// Show users. Disabled functionality. Its redirects to My Account page
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Index()
         {
             return await System.Threading.Tasks.Task.Run(() => { return RedirectToAction("Account"); });
@@ -33,6 +40,11 @@ namespace TaskManager.Controllers.MVC
 
 
         // GET: Users/Signin/
+        /// <summary>
+        /// Logon page
+        /// </summary>
+        /// <param name="ReturnUrl">Callback url</param>
+        /// <returns></returns>
         [AllowAnonymous]
         public async Task<IActionResult> Signin(string ReturnUrl)
         {
@@ -41,12 +53,18 @@ namespace TaskManager.Controllers.MVC
 
         }
 
-       
+
 
 
         // POST: Users/Signin/
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Logon page destination. Process user provided logon data.
+        /// </summary>
+        /// <param name="ReturnUrl">The callback URL</param>
+        /// <param name="signin">Logon data. Email and password</param>
+        /// <param name="signingConfigurations">Service provided signing configurations</param>
+        /// <param name="tokenConfigurations">Service provided token configurations</param>
+        /// <returns>Callback redirection</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
@@ -104,6 +122,10 @@ namespace TaskManager.Controllers.MVC
 
 
         // GET: Users/Signout/
+        /// <summary>
+        /// Make users Logoff and redirect to Signin page
+        /// </summary>
+        /// <returns>Signin page</returns>
         public async Task<IActionResult> Signout()
         {
             await HttpContext.SignOutAsync();
@@ -116,6 +138,10 @@ namespace TaskManager.Controllers.MVC
 
 
         // GET: Users/Details/5
+        /// <summary>
+        /// Users account details
+        /// </summary>
+        /// <returns>Users account details page</returns>
         public async Task<IActionResult> Details()
         {
             var id = long.Parse(User.Identity.Name);
@@ -128,6 +154,10 @@ namespace TaskManager.Controllers.MVC
         }
 
         // GET: Users/Signup
+        /// <summary>
+        /// Page to register new user
+        /// </summary>
+        /// <returns>New user form</returns>
         [AllowAnonymous]
         public IActionResult Signup()
         {
@@ -135,8 +165,11 @@ namespace TaskManager.Controllers.MVC
         }
 
         // POST: Users/Signup
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Process and register new User data amd redirect to Signin page
+        /// </summary>
+        /// <param name="user">New User's data</param>
+        /// <returns>Create User creation results</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
@@ -179,7 +212,10 @@ namespace TaskManager.Controllers.MVC
             }
             return View(user);
         }
-
+        /// <summary>
+        /// Validate user provided data
+        /// </summary>
+        /// <param name="user">User's data</param>
         private void ValidateUserData(User user)
         {
             if (string.IsNullOrEmpty(user.Firstname?.Trim()))
@@ -209,6 +245,10 @@ namespace TaskManager.Controllers.MVC
         }
 
         // GET: Users/Edit/5
+        /// <summary>
+        /// Users account page
+        /// </summary>
+        /// <returns>User's account data</returns>
         public async Task<IActionResult> Account()
         {
 
@@ -222,11 +262,14 @@ namespace TaskManager.Controllers.MVC
         }
 
         // POST: Users/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Process users data changes
+        /// </summary>
+        /// <param name="user">New user's data</param>
+        /// <returns>User's data changes results</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Account([Bind("Firstname,Lastname,Email")] User user)
+        public async Task<IActionResult> Account([Bind("Firstname,Lastname,Email,Password")] User user)
         {
             var id = long.Parse(User.Identity.Name);
             var _user = await _context.User.FindAsync(id);
@@ -234,6 +277,7 @@ namespace TaskManager.Controllers.MVC
             {
                 return NotFound();
             }
+            _context.Entry(_user).State = EntityState.Detached;
             user.Id = _user.Id;
 
             ValidateUserData(user);
@@ -246,6 +290,20 @@ namespace TaskManager.Controllers.MVC
             {
                 try
                 {
+                    if (string.IsNullOrEmpty(user.Password) == false)
+                    {
+                        //Process password change
+                        string pSalt = API.UsersController.GeneratePasswordSalt();
+
+                        user.PasswordSalt = pSalt;
+                        string pwdHash = API.UsersController.GeneratePasswordHash(user.Password, pSalt);
+
+                        user.PassworhHash = pwdHash;
+
+                        user.Password = null;
+                    }
+
+
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
@@ -266,6 +324,10 @@ namespace TaskManager.Controllers.MVC
         }
 
         // GET: Users/Delete/5
+        /// <summary>
+        /// Delete User Account page
+        /// </summary>
+        /// <returns>User's account deletion page</returns>
         public async Task<IActionResult> Delete()
         {
             var id = long.Parse(User.Identity.Name);
@@ -281,6 +343,10 @@ namespace TaskManager.Controllers.MVC
         }
 
         // POST: Users/Delete/5
+        /// <summary>
+        /// Process User Account deletion
+        /// </summary>
+        /// <returns>User's account deletion results</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed()
@@ -297,7 +363,11 @@ namespace TaskManager.Controllers.MVC
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(SignOut));
         }
-
+        /// <summary>
+        /// Check user exists
+        /// </summary>
+        /// <param name="id">Rhe User's Id</param>
+        /// <returns>true if exists, false if not</returns>
         private bool UserExists(long id)
         {
             return _context.User.Any(e => e.Id == id);

@@ -82,9 +82,10 @@ namespace TaskManager.Controllers.API
         /// <summary>
         /// Perform logon and returns JWT Token Info.
         /// </summary>
-        /// <param name="Signin">Signin Data</param>
-        /// <param name="signingConfigurations"></param>
-        /// <param name="tokenConfigurations"></param> 
+        /// <param name="Signin">Logon data. Email and password</param>
+        /// <param name="signingConfigurations">Service provided signing configurations</param>
+        /// <param name="tokenConfigurations">Service provided token configurations</param>
+        /// <returns>JWT Token Info</returns>
         [AllowAnonymous]
         [HttpPost]
         [ActionName("Logon")]
@@ -117,6 +118,14 @@ namespace TaskManager.Controllers.API
 
 
         }
+        /// <summary>
+        /// Process User provided Signin data
+        /// </summary>
+        /// <param name="Signin">Logon data. Email and password</param>
+        /// <param name="signingConfigurations">Service provided signing configurations</param>
+        /// <param name="tokenConfigurations">Service provided token configurations</param>
+        /// <param name="context">The Task Manager Database Context</param>
+        /// <returns>Logon results with JWT Data</returns>
         [NonAction]
         public static LogonResult PerformLogon(Signin Signin, SigningConfigurations signingConfigurations, TokenConfigurations tokenConfigurations, TaskManagerContext context)
         {
@@ -141,6 +150,13 @@ namespace TaskManager.Controllers.API
                 return PerformLogon(signingConfigurations, tokenConfigurations, user);
             }
         }
+        /// <summary>
+        /// Process system provided User Signin data
+        /// </summary>
+        /// <param name="signingConfigurations">Service provided signing configurations</param>
+        /// <param name="tokenConfigurations">Service provided token configurations</param>
+        /// <param name="user">User to get logon data and JWT Token</param>
+        /// <returns>Logon results with JWT Data</returns>
         [NonAction]
         public static LogonResult PerformLogon(SigningConfigurations signingConfigurations, TokenConfigurations tokenConfigurations, User user)
         {
@@ -184,7 +200,11 @@ namespace TaskManager.Controllers.API
                 Principal = new ClaimsPrincipal(identity)
             };
         }
-
+        /// <summary>
+        /// Check user exists
+        /// </summary>
+        /// <param name="id">Rhe User's Id</param>
+        /// <returns>true if exists, false if not</returns>
         private bool UserExists(long id)
         {
             return _context.User.Any(e => e.Id == id);

@@ -19,7 +19,7 @@
                                 <label for="exampleInputEmail1">
                                    Description
                                 </label>
-                                <input type="text" class="form-control" id="newTaskDescription" />
+                                <input type="text" title="New Task Description" placeholder="Description" class="form-control" keypress="ignoreEnterKey(event)" id="newTaskDescription" />
                             </div>
                         </form>
                     </div>
@@ -27,10 +27,10 @@
             </div>
             <div class="modal-footer">
 
-                <button type="button" onclick="confirmNewTask()" class="btn btn-primary">
+                <button title="Confirm task creation" type="button" onclick="confirmNewTask()" class="btn btn-primary">
                     Save
                 </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <button title="Close Window" type="button" class="btn btn-secondary" data-dismiss="modal">
                     Close
                 </button>
             </div>
