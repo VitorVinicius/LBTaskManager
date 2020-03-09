@@ -18,7 +18,6 @@ namespace TaskManager.Controllers.MVC
     /// <summary>
     /// MVC Controller to manage Users
     /// </summary>
-    [Route("[controller]/[action]")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class UsersController : Controller
     {
