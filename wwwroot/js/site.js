@@ -47,7 +47,7 @@ function loadTasks() {
                 $(targetContainer).append(
                     `<a title="Click to manage Task '${obj.description}'" class="list-group-item list-group-item-action ${itemClass}  d-flex justify-content-between" id="list-home-list" data-toggle="list" href="#list-task-${obj.id}" role="tab" aria-controls="task-${obj.id}">
                          
-                        <p class="p-0 m-0 flex-grow-1"><i class="fas fa-square"></i> ${obj.description}</p>
+                        <p onclick="setTaskIsConcluded(event,${obj.id})" title="Mark as concluded" class="p-0 m-0 flex-grow-1"><i class="fas fa-square"></i> ${obj.description}</p>
                         <span class="pull-right">
                             <span title="Mark as concluded" class="btn btn-xs btn-default" onclick="setTaskIsConcluded(event,${obj.id})">
                                 <i class="far fa-check-circle"></i>

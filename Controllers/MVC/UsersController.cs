@@ -18,6 +18,7 @@ namespace TaskManager.Controllers.MVC
     /// <summary>
     /// MVC Controller to manage Users
     /// </summary>
+    [Route("[controller]/[action]")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class UsersController : Controller
     {
@@ -208,7 +209,7 @@ namespace TaskManager.Controllers.MVC
 
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index","Home",new { });
             }
             return View(user);
         }
@@ -348,8 +349,8 @@ namespace TaskManager.Controllers.MVC
         /// </summary>
         /// <returns>User's account deletion results</returns>
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed()
+       
         {
             var id = long.Parse(User.Identity.Name);
             var user = await _context.User.FindAsync(id);
