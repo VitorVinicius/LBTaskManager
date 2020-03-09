@@ -269,7 +269,7 @@ namespace TaskManager.Controllers.MVC
         /// <returns>User's data changes results</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Account([Bind("Firstname,Lastname,Email,Password")] User user)
+        public async Task<IActionResult> Account([Bind("Firstname,Lastname,Email,Password,CurrentPassword")] User user)
         {
             var id = long.Parse(User.Identity.Name);
             var _user = await _context.User.FindAsync(id);
@@ -277,8 +277,7 @@ namespace TaskManager.Controllers.MVC
             {
                 return NotFound();
             }
-            _context.Entry(_user).State = EntityState.Detached;
-            user.Id = _user.Id;
+            
 
             ValidateUserData(user);
             if (_context.User.Any(u => u.Email == user.Email && u.Id!= id))
@@ -286,25 +285,42 @@ namespace TaskManager.Controllers.MVC
                 ModelState.AddModelError("Email", "This email is already associated with another account.");
             }
 
+            if (string.IsNullOrEmpty(user.Password) == false)
+            {
+                var __user = API.UsersController.CheckSignin(new Models.Signin { Email = user.Email, Password = user.CurrentPassword }, _context);
+                
+                if (__user != null)
+                {
+                    _context.Entry(__user).State = EntityState.Detached;
+                    //Process password change
+                    string pSalt = API.UsersController.GeneratePasswordSalt();
+
+                    _user.PasswordSalt = pSalt;
+                    string pwdHash = API.UsersController.GeneratePasswordHash(user.Password, pSalt);
+
+                    _user.PassworhHash = pwdHash;
+
+                    _user.Password = null;
+                }
+                else
+                {
+                    ModelState.AddModelError("CurrentPassword", "Current Password provided is invalid.");
+                }
+
+
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (string.IsNullOrEmpty(user.Password) == false)
-                    {
-                        //Process password change
-                        string pSalt = API.UsersController.GeneratePasswordSalt();
-
-                        user.PasswordSalt = pSalt;
-                        string pwdHash = API.UsersController.GeneratePasswordHash(user.Password, pSalt);
-
-                        user.PassworhHash = pwdHash;
-
-                        user.Password = null;
-                    }
+                    _user.Firstname = user.Firstname;
+                    _user.Lastname = user.Lastname;
+                    _user.LastUpdateDate = DateTime.UtcNow;
+                    _user.Email = user.Email;
 
 
-                    _context.Update(user);
+                    _context.Update(_user);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

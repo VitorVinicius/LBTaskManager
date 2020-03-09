@@ -277,6 +277,9 @@
         <member name="P:TaskManager.Models.User.Email">
             <summary>User's Email</summary>
         </member>
+        <member name="P:TaskManager.Models.User.CurrentPassword">
+            <summary>User current password. Used only on edit account. This is not stored in database</summary>
+        </member>
         <member name="P:TaskManager.Models.User.Password">
             <summary>User password. Used only on create/edit account. This is not stored in database</summary>
         </member>

@@ -18,6 +18,11 @@ namespace TaskManager.Models
         public string Lastname { get; set; }
         ///<summary>User's Email</summary>
         public string Email { get; set; }
+
+        ///<summary>User current password. Used only on edit account. This is not stored in database</summary>
+        [NotMapped]
+        public string CurrentPassword { get; set; }
+
         ///<summary>User password. Used only on create/edit account. This is not stored in database</summary>
         [NotMapped]
         public string Password { get; set; }
