@@ -2,6 +2,10 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/TaskManager",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:51755",
       "sslPort": 44370
@@ -29,6 +33,9 @@
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "publishAllPorts": true,
       "useSSL": true
+    },
+    "IIS": {
+      "commandName": "IIS"
     }
   }
 }
